@@ -59,11 +59,11 @@ public class TreeLayout extends ViewGroup {
     private int mBranchWidth;                   // 横枝宽度
     private int mBranchHeight;                  // 横枝高度/厚度
     private int mBranchColor;                   // 横枝颜色
-    private int mLeafRes;                       // 树叶的 Res
+    private int mLeafSrc;                       // 树叶的 Res
     private Drawable mLeafDrawable;             // 树叶的 Res 转换后的 Drawable
     private int mLeafWidth;                     // 树叶的宽度
     private int mLeafHeight;                    // 树叶的高度
-    private int mNodeRes;                       // 枝节点的 Res
+    private int mNodeSrc;                       // 枝节点的 Res
     private Drawable mNodeDrawable;             // 枝节点的 Res 转换后的 Drawable
     private int mNodeWidth;                     // 枝节点的宽度
     private int mNodeHeight;                    // 枝节点的高度
@@ -164,12 +164,12 @@ public class TreeLayout extends ViewGroup {
             mBranchWidth = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_branchWidth, BRANCH_WIDTH);
             mBranchHeight = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_branchHeight, BRANCH_HEIGHT);
             mBranchColor = typedArray.getColor(R.styleable.TreeLayout_branchColor, BRANCH_COLOR);
-            mLeafRes = typedArray.getResourceId(R.styleable.TreeLayout_leafSrc, DEFAULT_RES);
-            mLeafDrawable = ContextCompat.getDrawable(getContext(), mLeafRes);
+            mLeafSrc = typedArray.getResourceId(R.styleable.TreeLayout_leafSrc, DEFAULT_RES);
+            mLeafDrawable = ContextCompat.getDrawable(getContext(), mLeafSrc);
             mLeafWidth = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_leafWidth, LEAF_WIDTH);
             mLeafHeight = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_leafHeight, LEAF_HEIGHT);
-            mNodeRes = typedArray.getResourceId(R.styleable.TreeLayout_nodeSrc, DEFAULT_RES);
-            mNodeDrawable = ContextCompat.getDrawable(getContext(), mNodeRes);
+            mNodeSrc = typedArray.getResourceId(R.styleable.TreeLayout_nodeSrc, DEFAULT_RES);
+            mNodeDrawable = ContextCompat.getDrawable(getContext(), mNodeSrc);
             mNodeWidth = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_nodeWidth, NODE_WIDTH);
             mNodeHeight = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_nodeWidth, NODE_HEIGHT);
             mPadding = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_android_padding, DEFAULT_PADDING);
@@ -186,7 +186,7 @@ public class TreeLayout extends ViewGroup {
             mIndentValue = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_indentValue, INDENT_VALUE);
             mIsLinkIndented = typedArray.getBoolean(R.styleable.TreeLayout_isLinkIndented, LINK_INDENTED);
             mUseDefaultAnimation = typedArray.getBoolean(R.styleable.TreeLayout_useDefaultAnimation, USE_ANIMATION);
-            mIsTreeExpanded = typedArray.getBoolean(R.styleable.TreeLayout_isTreeExpand, TREE_EXPANDED);
+            mIsTreeExpanded = typedArray.getBoolean(R.styleable.TreeLayout_isTreeExpanded, TREE_EXPANDED);
             mTrunkType = typedArray.getInt(R.styleable.TreeLayout_trunkType, DEFAULT_TRUNK_TYPE);
             Log.e(TAG, "mBackground : " + mBackground + "\n" +
                        "mLayoutGravity : " + mLayoutGravity + "\n" +
@@ -195,10 +195,10 @@ public class TreeLayout extends ViewGroup {
                        "mBranchWidth : " + mBranchWidth + "\n" +
                        "mBranchHeight : " + mBranchHeight + "\n" +
                        "mBranchColor : " + mBranchColor + "\n" +
-                       "mLeafRes : " + mLeafRes + "\n" +
+                       "mLeafSrc : " + mLeafSrc + "\n" +
                        "mLeafWidth : " + mLeafWidth + "\n" +
                        "mLeafHeight : " + mLeafHeight + "\n" +
-                       "mNodeRes : " + mNodeRes + "\n" +
+                       "mNodeSrc : " + mNodeSrc + "\n" +
                        "mNodeWidth : " + mNodeWidth + "\n" +
                        "mNodeHeight : " + mNodeHeight + "\n" +
                        "mPadding : " + mPadding + "\n" +
@@ -339,8 +339,33 @@ public class TreeLayout extends ViewGroup {
 
     private int calculateChildViewLeftCenterY(View childView) {
         // TODO 需要根据 childView 中指定的，横枝指向的 View 以及所指向 View 顶部的偏移值来确定
-        // TODO 如果没有明确指定的指向 View，则取 childView 的第一个孩子，如果没有明确的偏移值，则取指向 View 垂直方向的中点
-        return childView.getTop() + childView.getMeasuredHeight() / 2;
+        // TODO 如果没有明确指的指向 View，则取 childView 的第一个孩子，如果没有明确的偏移值，则取指向 View 垂直方向的中点
+        View targetView = childView;
+        LayoutParams layoutParams = (LayoutParams) childView.getLayoutParams();
+        int parentTop = 0;
+        if (childView instanceof ViewGroup) {
+            ViewGroup childViewGroup = (ViewGroup) childView;
+            int childCount = childViewGroup.getChildCount();
+            int targetIndex = 0;
+            if (childCount > 1) {
+                // 非法值
+                if (layoutParams.branchTargetIndex < 0 || layoutParams.branchTargetIndex >= childCount) {
+                    layoutParams.branchTargetIndex = 0; // 默认指向第一个孩子
+                }
+                targetIndex = layoutParams.branchTargetIndex;
+            }
+            targetView = childViewGroup.getChildAt(targetIndex);
+            if (targetView != null) {
+                parentTop = childView.getTop();
+            } else {
+                targetView = childView;
+            }
+        }
+        int offsetTop = targetView.getMeasuredHeight() / 2;
+        if (layoutParams.offsetTargetTop >= 0) {
+            offsetTop = layoutParams.offsetTargetTop;
+        }
+        return parentTop + targetView.getTop() + offsetTop;
     }
 
     private int layoutChildByItemType(int childTop, View childView, LayoutParams layoutParams) {
@@ -598,18 +623,53 @@ public class TreeLayout extends ViewGroup {
 
     public static class LayoutParams extends ViewGroup.MarginLayoutParams {
 
-        private static final int DEFAULT_ITEM_TYPE = 0;     // 条目类型默认值：NORMAL
-        private static final int DEFAULT_INDENT_LEVEL = 0;  // 条目缩进级别默认值：0
+        private static final int DEFAULT_ITEM_TYPE = 0;         // 条目类型默认值：NORMAL
+        private static final int DEFAULT_INDENT_LEVEL = 0;      // 条目缩进级别默认值：0
+        private static final int CUSTOM_DEFAULT_INT = -1;       // 自定义默认值都设置为 -1
+        private static final float CUSTOM_DEFAULT_FLOAT = -1;   // 自定义默认值都设置为 -1
+        private static final int CUSTOM_DEFAULT_COLOR = 0;      // 自定义默认颜色值都设置为透明:Color.TRANSPARENT == 0
+        private static final int CUSTOM_DEFAULT_RES_ID = 0;     // 自定义默认资源 ID 都设置为 0
+        private static final int BRANCH_TARGET_INDEX = 0;       // 默认横枝指向的子 View 中的第一孩子
 
-        public int itemType;                               // 条目类型
-        public int indentLevel;                            // 缩进级别
+        public int customBranchWidth;                           // 自定义横枝宽度 <= 默认横枝宽度
+        public int customBranchHeight;                          // 自定义横枝高度
+        public int customBranchColor;                           // 自定义横枝颜色
+        public int customLeafSrc;                               // 自定义叶子 Src
+        public Drawable customLeafDrawable;                     // 自定义叶子 Drawable
+        public int customLeafWidth;                             // 自定义叶子宽度
+        public int customLeafHeight;                            // 自定义叶子高度
+        public int customNodeSrc;                               // 自定义枝节点 Src
+        public Drawable customNodeDrawable;                     // 自定义枝节点 Drawable
+        public int customNodeWidth;                             // 自定义枝节点宽度
+        public int customNodeHeight;                            // 自定义枝节点高度
+        public int indentLevel;                                 // 缩进级别
+        public int branchTargetIndex;                           // 是否是横枝指向的目标 View
+        public int offsetTargetTop;                             // 横枝距离指向目标 View 顶部的偏移值
+        public int itemType;                                    // 条目类型
 
         public LayoutParams(Context context, AttributeSet attrs) {
             super(context, attrs);
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.TreeLayout_Layout);
             if (typedArray != null) {
-                itemType = typedArray.getInt(R.styleable.TreeLayout_Layout_itemType, DEFAULT_ITEM_TYPE);
+                customBranchWidth = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_Layout_customBranchWidth, CUSTOM_DEFAULT_INT);
+                customBranchHeight = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_Layout_customBranchHeight, CUSTOM_DEFAULT_INT);
+                customBranchColor = typedArray.getColor(R.styleable.TreeLayout_Layout_customBranchColor, CUSTOM_DEFAULT_COLOR);
+                customLeafSrc = typedArray.getResourceId(R.styleable.TreeLayout_Layout_customLeafSrc, CUSTOM_DEFAULT_RES_ID);
+                if (customLeafSrc != 0) {
+                    customLeafDrawable = ContextCompat.getDrawable(context, customLeafSrc);
+                }
+                customLeafWidth = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_Layout_customLeafWidth, CUSTOM_DEFAULT_INT);
+                customLeafHeight = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_Layout_customLeafHeight, CUSTOM_DEFAULT_INT);
+                customNodeSrc = typedArray.getResourceId(R.styleable.TreeLayout_Layout_customLeafSrc, CUSTOM_DEFAULT_RES_ID);
+                if (customNodeSrc != 0) {
+                    customNodeDrawable = ContextCompat.getDrawable(context, customNodeSrc);
+                }
+                customNodeWidth = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_Layout_customNodeWidth, CUSTOM_DEFAULT_INT);
+                customNodeHeight = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_Layout_customNodeHeight, CUSTOM_DEFAULT_INT);
                 indentLevel = typedArray.getInt(R.styleable.TreeLayout_Layout_indentLevel, DEFAULT_INDENT_LEVEL);
+                branchTargetIndex = typedArray.getInt(R.styleable.TreeLayout_Layout_branchTargetIndex, BRANCH_TARGET_INDEX);
+                offsetTargetTop = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_Layout_offsetTargetTop, CUSTOM_DEFAULT_INT);
+                itemType = typedArray.getInt(R.styleable.TreeLayout_Layout_itemType, DEFAULT_ITEM_TYPE);
                 typedArray.recycle();
             }
         }

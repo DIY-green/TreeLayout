@@ -62,7 +62,7 @@
         <!-- 是否使用默认动画展开收起 -->
         <attr name="useDefaultAnimation" format="boolean"/>
         <!-- 树的展开状态 -->
-        <attr name="isTreeExpand" format="boolean"/>
+        <attr name="isTreeExpanded" format="boolean"/>
         <!-- 主干类型 -->
         <attr name="trunkType">
             <!-- 默认为普通类型：目录树 -->
@@ -73,8 +73,6 @@
     </declare-styleable>
 
     <declare-styleable name="TreeLayout_Layout">
-        <!-- 是否是横枝指向的目标 -->
-        <attr name="isBranchTarget" format="boolean"/>
         <!-- 单独指定横枝宽度 -->
         <attr name="customBranchWidth" format="dimension"/>
         <!-- 单独指定横枝高度 -->
@@ -95,10 +93,10 @@
         <attr name="customNodeHeight" format="dimension"/>
         <!-- Item 缩进级别 -->
         <attr name="indentLevel" format="integer"/>
-        <!-- 是否是横枝指向的条目 -->
-        <attr name="isBranchDirector" format="integer"/>
-        <!-- 横枝距离指向条目顶部的偏移值 -->
-        <attr name="offsetItemTop" format="dimension"/>
+        <!-- 横枝指向的目标的位置 -->
+        <attr name="branchTargetIndex" format="integer"/>
+        <!-- 横枝距离指向目标条目顶部的偏移值 -->
+        <attr name="offsetTargetTop" format="dimension"/>
         <!-- Item 条目类型 -->
         <attr name="itemType">
             <!-- 默认为普通类型：左侧有横枝 -->
@@ -139,7 +137,7 @@
         <item name="indentValue">10dp</item>
         <item name="isLinkIndented">false</item>
         <item name="useDefaultAnimation">false</item>
-        <item name="isTreeExpand">true</item>
+        <item name="isTreeExpanded">true</item>
         <item name="trunkType">normal</item>
     </style>
 

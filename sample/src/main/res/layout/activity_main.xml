@@ -41,12 +41,32 @@
             android:text="2-=====LABEL====="
             app:indentLevel="2"
             app:itemType="label"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:branchTargetIndex="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:gravity="center_vertical"
+                android:text="测试一下 branchTargetIndex "
+                android:background="@color/yellow"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center_vertical"
+                android:text="这是横枝的目标Target"
+                android:background="@color/green"/>
+        </LinearLayout>
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="100dp"
             android:gravity="center_vertical"
-            android:text="3-TEST_NORMAL_ITEM"
+            android:text="3-TEST_offsetTargetTop = 0"
             android:background="@color/red"
+            app:offsetTargetTop="0dp"
             app:indentLevel="3"
             app:itemType="normal"/>
         <TextView
