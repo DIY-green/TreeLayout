@@ -9,6 +9,8 @@
         <attr name="trunkWidth" format="dimension"/>
         <!-- 主干颜色 -->
         <attr name="trunkColor" format="color"/>
+        <!-- 是允许自定义横枝 -->
+        <attr name="isCustomBranchEnable" format="boolean"/>
         <!-- 是显示横枝 -->
         <attr name="isShowBranch" format="boolean"/>
         <!-- 横枝宽度 -->
@@ -113,12 +115,13 @@
     <!-- 定义 theme 可配置 style -->
     <attr name="TreeLayoutCustomStyle" format="reference"/>
 
-    <!-- 定义默认 style -->
+    <!-- 定义 TreeLayout 默认 style -->
     <style name="TreeLayoutDefaultStyle">
         <item name="android:background">@android:color/white</item>
         <item name="android:layout_gravity">left</item>
         <item name="trunkWidth">2dp</item>
         <item name="trunkColor">@color/colorTrunk</item>
+        <item name="isCustomBranchEnable">true</item>
         <item name="isShowBranch">true</item>
         <item name="branchWidth">20dp</item>
         <item name="branchHeight">2dp</item>
@@ -139,6 +142,13 @@
         <item name="useDefaultAnimation">false</item>
         <item name="isTreeExpanded">true</item>
         <item name="trunkType">normal</item>
+    </style>
+
+    <!-- 定义 TreeLayout Item 默认 style -->
+    <style name="TreeLayoutItemDefaultStyle">
+        <item name="customBranchWidth">20dp</item>
+        <item name="customBranchHeight">2dp</item>
+        <item name="customBranchColor">@color/colorBranch</item>
     </style>
 
 </resources>

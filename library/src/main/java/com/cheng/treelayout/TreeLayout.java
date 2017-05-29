@@ -59,6 +59,7 @@ public class TreeLayout extends ViewGroup {
     private int mTrunkWidth;                    // 主干宽度
     private int mTrunkColor;                    // 主干颜色
     private boolean mIsShowBranch;              // 是否显示横枝
+    private boolean mIsCustomBranchEnable;      // 是否允许自定义Branch
     private int mBranchWidth;                   // 横枝宽度
     private int mBranchHeight;                  // 横枝高度/厚度
     private int mBranchColor;                   // 横枝颜色
@@ -92,8 +93,6 @@ public class TreeLayout extends ViewGroup {
     //==========坐标计算相关==========//
     private int mBranchCount;                   // 所有横枝（也是枝节点）的数量
     private int mTotalHeight;                   // 所有条目占据的总高度
-//    private int mHeaderTotalHeight;             // 所有头部条目占据的总高度
-//    private int mFooterTotalHeight;             // 所有底部条目占据的总高度
     private int mTreeWidth;                     // TreeLayout 左侧树形结构所占宽度
     private int mFirstTreeItemIndex;            // 树形结构中第一个条目（非 Header/Footer）的位置
     private int mLastTreeItemIndex;             // 树形结构中最后一个条目（非 Header/Footer）的位置
@@ -101,6 +100,7 @@ public class TreeLayout extends ViewGroup {
     private int mLastNormalItemIndex;           // 最后一个普通条目的位置
     private int[] mBranchIndexArr;              // 所有横枝条目的在 Child 集合中的位置
     private float[] mBranchCoordinateArr;       // 所有横枝坐标数组
+    private float[] mSingleBranchCoordinateArr; // 单条横枝坐标数组
     private float[] mTrunkCoordinateArr;        // 主干坐标数组
     private float mBranchStartX;                // 所有的横枝起点X
     private float mBranchEndX;                  // 所有的横枝终点X
@@ -161,6 +161,7 @@ public class TreeLayout extends ViewGroup {
             mTrunkWidth = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_trunkWidth, TRUNK_WIDTH);
             mTrunkColor = typedArray.getColor(R.styleable.TreeLayout_trunkColor, TRUNK_COLOR);
             mIsShowBranch = typedArray.getBoolean(R.styleable.TreeLayout_isShowBranch, DEFAULT_TRUE);
+            mIsCustomBranchEnable = typedArray.getBoolean(R.styleable.TreeLayout_isCustomBranchEnable, DEFAULT_FALSE);
             mBranchWidth = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_branchWidth, BRANCH_WIDTH);
             mBranchHeight = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_branchHeight, BRANCH_HEIGHT);
             mBranchColor = typedArray.getColor(R.styleable.TreeLayout_branchColor, BRANCH_COLOR);
@@ -230,8 +231,8 @@ public class TreeLayout extends ViewGroup {
         mBranchEndX = mBranchStartX + mTrunkWidth + mBranchWidth;
         mTrunkStartX = mBranchStartX;
         mTrunkEndX = mBranchStartX;
-//        mHasNormalItem = false;
         mTrunkCoordinateArr = new float[4];
+        mSingleBranchCoordinateArr = new float[4];
     }
 
     private void initPaint() {
@@ -260,6 +261,17 @@ public class TreeLayout extends ViewGroup {
     private void prepareBranchPaint() {
         mPaint.setColor(mBranchColor);
         mPaint.setStrokeWidth(mBranchHeight);
+    }
+
+    private void prepareBranchPaint(int color, float strokeWidth) {
+        if (color == LayoutParams.CUSTOM_DEFAULT_COLOR) {
+            color = mBranchColor;
+        }
+        if (strokeWidth <= 0) {
+            strokeWidth = mBranchHeight;
+        }
+        mPaint.setColor(color);
+        mPaint.setStrokeWidth(strokeWidth);
     }
 
     @Override
@@ -298,12 +310,10 @@ public class TreeLayout extends ViewGroup {
         int heightSizeAndState = resolveSizeAndState(heightSize, heightMeasureSpec, 0);
         heightSize = heightSizeAndState & MEASURED_SIZE_MASK;
         setMeasuredDimension(maxWidth, heightSize);
-        Log.e(TAG, "Width = " + maxWidth + "Height = " + heightSize);
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        Log.e(TAG, "boolean changed = " + changed + ", int l = " + l + ", int t = " + t + ", int r = " + r + ", int b = " + b);
         int childCount = getChildCount();
         if (childCount < 1) return;
         int childTop = mPaddingTop;
@@ -312,7 +322,6 @@ public class TreeLayout extends ViewGroup {
             LayoutParams layoutParams = (LayoutParams) childView.getLayoutParams();
             if (childView.getVisibility() == GONE) continue;
             childTop = layoutChildByItemType(childTop, childView, layoutParams);
-
             // 在 onLayout 的时候确定所有需要绘制的坐标
             if (layoutParams.itemType == ITEM_TYPE_NORMAL) {
                 int branchY = calculateChildViewLeftCenterY(childView);
@@ -346,8 +355,8 @@ public class TreeLayout extends ViewGroup {
     }
 
     private int calculateChildViewLeftCenterY(View childView) {
-        // TODO 需要根据 childView 中指定的，横枝指向的 View 以及所指向 View 顶部的偏移值来确定
-        // TODO 如果没有明确指的指向 View，则取 childView 的第一个孩子，如果没有明确的偏移值，则取指向 View 垂直方向的中点
+        // 需要根据 childView 中指定的，横枝指向的 View 以及所指向 View 顶部的偏移值来确定
+        // 如果没有明确指的指向 View，则取 childView 的第一个孩子，如果没有明确的偏移值，则取指向 View 垂直方向的中点
         View targetView = childView;
         LayoutParams layoutParams = (LayoutParams) childView.getLayoutParams();
         int parentTop = 0;
@@ -423,11 +432,6 @@ public class TreeLayout extends ViewGroup {
         //==========开始绘制==========//
         prepareTrunkPaint();
         drawTrunk(canvas);
-        // TODO
-        if (mIsShowBranch) {
-            prepareBranchPaint();
-            canvas.drawLines(mBranchCoordinateArr, mPaint);
-        }
         drawBranchNodeLeaf(mBranchCoordinateArr, canvas);
     }
 
@@ -436,51 +440,93 @@ public class TreeLayout extends ViewGroup {
     }
 
     private void drawBranchNodeLeaf(float[] branchCoordinateArr, Canvas canvas) {
-        if (!mIsShowNode && !mIsShowLeaf) return; // 如果枝节点和叶子都不展示，那么就不需要绘制
         int nodeCenterX; // 枝节点中心 X
         int nodeCenterY; // 枝节点中心 Y
         int leafCenterX; // 叶子中心 X
         int leafCenterY; // 叶子中心 Y
+        int branchStartX; // 横枝起点 X
+        int branchStartY; // 横枝起点 Y
+        int branchEndX; // 横枝终点 X
+        int branchEndY; // 横枝终点 Y
         int nodeHRadius = mNodeWidth / 2;
         int nodeVRadius = mNodeHeight / 2;
         int leafHRadius = mLeafWidth / 2;
         int leafVRadius = mLeafHeight / 2;
-        Drawable nodeDrawable;
-        Drawable leafDrawable;
-        for (int i = 0, childIndex, count = branchCoordinateArr.length; i < count; i+=4) {
-            nodeCenterX = (int) branchCoordinateArr[i];
-            nodeCenterY = (int) branchCoordinateArr[i+1];
-            leafCenterX = (int) branchCoordinateArr[i+2];
-            leafCenterY = (int) branchCoordinateArr[i+3];
-            childIndex = mBranchIndexArr[i / 4];
-            nodeDrawable = mNodeDrawable;
-            leafDrawable = mLeafDrawable;
-            LayoutParams layoutParams = (LayoutParams) getChildAt(childIndex).getLayoutParams();
-            if (layoutParams != null) {
-                if (layoutParams.customNodeDrawable != null) {
-                    nodeDrawable = layoutParams.customNodeDrawable;
-                }
-                if (layoutParams.customLeafDrawable != null) {
-                    leafDrawable = layoutParams.customLeafDrawable;
-                }
-            }
-            if (mIsShowNode && nodeDrawable != null) {
-                nodeDrawable.setBounds(
-                        nodeCenterX - nodeHRadius,
-                        nodeCenterY - nodeVRadius,
-                        nodeCenterX + nodeHRadius,
-                        nodeCenterY + nodeVRadius);
-                nodeDrawable.draw(canvas);
-            }
-            if (mIsShowNode && leafDrawable != null) {
-                leafDrawable.setBounds(
-                        leafCenterX - leafHRadius,
-                        leafCenterY - leafVRadius,
-                        leafCenterX + leafHRadius,
-                        leafCenterY + leafVRadius);
-                leafDrawable.draw(canvas);
-            }
+        for (int i = 0, count = branchCoordinateArr.length; i < count; i+=4) {
+            branchStartX = nodeCenterX = (int) branchCoordinateArr[i];
+            branchStartY = nodeCenterY = (int) branchCoordinateArr[i+1];
+            branchEndX = leafCenterX = (int) branchCoordinateArr[i+2];
+            branchEndY = leafCenterY = (int) branchCoordinateArr[i+3];
+            // childIndex = mBranchIndexArr[i / 4];
+            LayoutParams layoutParams = (LayoutParams) getChildAt(mBranchIndexArr[i / 4]).getLayoutParams();
+            drawBranch(canvas, branchStartX, branchStartY, branchEndX, branchEndY, layoutParams);
+            drawNode(canvas, nodeCenterX, nodeCenterY, nodeHRadius, nodeVRadius, layoutParams.customNodeDrawable);
+            drawLeaf(canvas, leafCenterX, leafCenterY, leafHRadius, leafVRadius, layoutParams.customLeafDrawable);
         }
+    }
+
+    private void drawBranch(Canvas canvas, int branchStartX, int branchStartY, int branchEndX, int branchEndY, LayoutParams layoutParams) {
+        if (!mIsShowBranch) return;
+        if (!mIsCustomBranchEnable) {
+            prepareBranchPaint();
+            canvas.drawLines(mBranchCoordinateArr, mPaint);
+            return;
+        }
+        prepareBranchPaint(layoutParams.customBranchColor, layoutParams.customBranchHeight);
+        int customBranchWidth = layoutParams.customBranchWidth * (layoutParams.indentLevel + 1);
+        int defaultBranchWidth = branchEndX - branchStartX;
+        int branchWidth = defaultBranchWidth;
+        if (customBranchWidth >= 0) {
+            branchWidth = Math.min(customBranchWidth, defaultBranchWidth);
+        }
+        branchEndX = branchStartX + branchWidth;
+        mSingleBranchCoordinateArr[0] = branchStartX;
+        mSingleBranchCoordinateArr[1] = branchStartY;
+        mSingleBranchCoordinateArr[2] = branchEndX;
+        mSingleBranchCoordinateArr[3] = branchEndY;
+        canvas.drawLines(mSingleBranchCoordinateArr, mPaint);
+    }
+
+    private void drawNode(Canvas canvas, int nodeCenterX, int nodeCenterY, int nodeHRadius, int nodeVRadius, Drawable customNodeDrawable) {
+        if (!mIsShowNode) return;
+        Drawable nodeDrawable;
+        nodeDrawable = mNodeDrawable;
+        if (customNodeDrawable != null) {
+            nodeDrawable = customNodeDrawable;
+        }
+        drawDrawable(
+                canvas,
+                nodeCenterX - nodeHRadius,
+                nodeCenterY - nodeVRadius,
+                nodeCenterX + nodeHRadius,
+                nodeCenterY + nodeVRadius,
+                nodeDrawable);
+    }
+
+    private void drawLeaf(Canvas canvas, int leafCenterX, int leafCenterY, int leafHRadius, int leafVRadius, Drawable customLeafDrawable) {
+        if (!mIsShowLeaf) return;
+        Drawable leafDrawable;
+        leafDrawable = mLeafDrawable;
+        if (customLeafDrawable != null) {
+            leafDrawable = customLeafDrawable;
+        }
+        drawDrawable(
+                canvas,
+                leafCenterX - leafHRadius,
+                leafCenterY - leafVRadius,
+                leafCenterX + leafHRadius,
+                leafCenterY + leafVRadius,
+                leafDrawable);
+    }
+
+    private void drawDrawable(Canvas canvas, int left, int top, int right, int bottom, Drawable leafDrawable) {
+        if (leafDrawable == null) return;
+        leafDrawable.setBounds(
+                left,
+                top,
+                right,
+                bottom);
+        leafDrawable.draw(canvas);
     }
 
     /**
@@ -654,13 +700,13 @@ public class TreeLayout extends ViewGroup {
 
     public static class LayoutParams extends ViewGroup.MarginLayoutParams {
 
-        private static final int DEFAULT_ITEM_TYPE = 0;         // 条目类型默认值：NORMAL
-        private static final int DEFAULT_INDENT_LEVEL = 0;      // 条目缩进级别默认值：0
-        private static final int CUSTOM_DEFAULT_INT = -1;       // 自定义默认值都设置为 -1
-        private static final float CUSTOM_DEFAULT_FLOAT = -1;   // 自定义默认值都设置为 -1
-        private static final int CUSTOM_DEFAULT_COLOR = 0;      // 自定义默认颜色值都设置为透明:Color.TRANSPARENT == 0
-        private static final int CUSTOM_DEFAULT_RES_ID = 0;     // 自定义默认资源 ID 都设置为 0
-        private static final int BRANCH_TARGET_INDEX = 0;       // 默认横枝指向的子 View 中的第一孩子
+        static final int DEFAULT_ITEM_TYPE = 0;                 // 条目类型默认值：NORMAL
+        static final int DEFAULT_INDENT_LEVEL = 0;              // 条目缩进级别默认值：0
+        static final int CUSTOM_DEFAULT_INT = -1;               // 自定义默认值都设置为 -1
+        static final float CUSTOM_DEFAULT_FLOAT = -1;           // 自定义默认值都设置为 -1
+        static final int CUSTOM_DEFAULT_COLOR = -1;             // 自定义默认颜色值都设置为 -1，方便检测是否赋值
+        static final int CUSTOM_DEFAULT_RES_ID = 0;             // 自定义默认资源 ID 都设置为 0
+        static final int BRANCH_TARGET_INDEX = 0;               // 默认横枝指向的子 View 中的第一孩子
 
         public int customBranchWidth;                           // 自定义横枝宽度 <= 默认横枝宽度
         public int customBranchHeight;                          // 自定义横枝高度
@@ -680,7 +726,7 @@ public class TreeLayout extends ViewGroup {
 
         public LayoutParams(Context context, AttributeSet attrs) {
             super(context, attrs);
-            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.TreeLayout_Layout);
+            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.TreeLayout_Layout, 0, R.style.TreeLayoutItemDefaultStyle);
             if (typedArray != null) {
                 customBranchWidth = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_Layout_customBranchWidth, CUSTOM_DEFAULT_INT);
                 customBranchHeight = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_Layout_customBranchHeight, CUSTOM_DEFAULT_INT);
