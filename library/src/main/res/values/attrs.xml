@@ -10,7 +10,7 @@
         <!-- 主干颜色 -->
         <attr name="trunkColor" format="color"/>
         <!-- 是显示横枝 -->
-        <attr name="showBranch" format="boolean"/>
+        <attr name="isShowBranch" format="boolean"/>
         <!-- 横枝宽度 -->
         <attr name="branchWidth" format="dimension"/>
         <!-- 横枝高度/厚度 -->
@@ -18,7 +18,7 @@
         <!-- 横枝颜色 -->
         <attr name="branchColor" format="color"/>
         <!-- 是否显示树叶 -->
-        <attr name="showLeaf" format="boolean"/>
+        <attr name="isShowLeaf" format="boolean"/>
         <!-- 树叶图片 -->
         <attr name="leafSrc" format="reference|color"/>
         <!-- 树叶图片宽度 -->
@@ -26,7 +26,7 @@
         <!-- 树叶图片长度 -->
         <attr name="leafHeight" format="dimension"/>
         <!-- 是否显示枝节点 -->
-        <attr name="showNode" format="boolean"/>
+        <attr name="isShowNode" format="boolean"/>
         <!-- 枝节处图片 -->
         <attr name="nodeSrc" format="reference|color"/>
         <!-- 枝节处图片宽度 -->
@@ -119,16 +119,16 @@
         <item name="android:layout_gravity">left</item>
         <item name="trunkWidth">2dp</item>
         <item name="trunkColor">@color/colorTrunk</item>
-        <item name="showBranch">true</item>
+        <item name="isShowBranch">true</item>
         <item name="branchWidth">20dp</item>
         <item name="branchHeight">2dp</item>
         <item name="branchColor">@color/colorBranch</item>
-        <item name="showLeaf">false</item>
+        <item name="isShowLeaf">true</item>
         <item name="leafSrc">@drawable/leaf_circle</item>
         <item name="leafWidth">15dp</item>
         <item name="leafHeight">15dp</item>
-        <item name="showNode">false</item>
-        <item name="nodeSrc">@drawable/leaf_circle</item>
+        <item name="isShowNode">true</item>
+        <item name="nodeSrc">@drawable/node_circle</item>
         <item name="nodeWidth">10dp</item>
         <item name="nodeHeight">10dp</item>
         <item name="android:padding">10dp</item>

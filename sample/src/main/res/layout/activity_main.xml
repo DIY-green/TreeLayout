@@ -33,6 +33,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="1-TEST_NORMAL_ITEM"
+            app:customLeafSrc="@color/black"
+            app:customNodeSrc="@drawable/indigo_circle"
             app:indentLevel="1"
             app:itemType="normal"/>
         <TextView
@@ -45,8 +47,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             app:branchTargetIndex="1"
-            android:orientation="vertical">
+            app:customLeafSrc="@color/red"
+            app:customNodeSrc="@drawable/blue_circle">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
@@ -66,6 +70,8 @@
             android:gravity="center_vertical"
             android:text="3-TEST_offsetTargetTop = 0"
             android:background="@color/red"
+            app:customLeafSrc="@color/orange"
+            app:customNodeSrc="@drawable/green_circle"
             app:offsetTargetTop="0dp"
             app:indentLevel="3"
             app:itemType="normal"/>
@@ -81,6 +87,8 @@
             android:gravity="center_vertical"
             android:text="5-TEST_NORMAL_ITEM"
             android:background="@color/green"
+            app:customLeafSrc="@color/yellow"
+            app:customNodeSrc="@drawable/purple_circle"
             app:indentLevel="0"
             app:itemType="normal"/>
         <TextView
@@ -95,6 +103,8 @@
             android:gravity="center_vertical"
             android:text="7-TEST_NORMAL_ITEM"
             android:background="@color/blue"
+            app:customLeafSrc="@drawable/indigo_circle"
+            app:customNodeSrc="@color/black"
             app:indentLevel="0"
             app:itemType="normal"/>
         <TextView
