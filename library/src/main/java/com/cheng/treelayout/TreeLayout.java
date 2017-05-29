@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -195,32 +194,6 @@ public class TreeLayout extends ViewGroup {
             mIsTreeExpanded = typedArray.getBoolean(R.styleable.TreeLayout_isTreeExpanded, TREE_EXPANDED);
             mIsToggleEnable = typedArray.getBoolean(R.styleable.TreeLayout_isToggleEnable, DEFAULT_TRUE);
             mTrunkType = typedArray.getInt(R.styleable.TreeLayout_trunkType, DEFAULT_TRUNK_TYPE);
-            Log.e(TAG, "mBackground : " + mBackground + "\n" +
-                       "mLayoutGravity : " + mLayoutGravity + "\n" +
-                       "mTrunkWidth : " + mTrunkWidth + "\n" +
-                       "mTrunkColor : " + mTrunkColor + "\n" +
-                       "mBranchWidth : " + mBranchWidth + "\n" +
-                       "mBranchHeight : " + mBranchHeight + "\n" +
-                       "mBranchColor : " + mBranchColor + "\n" +
-                       "mLeafSrc : " + mLeafSrc + "\n" +
-                       "mLeafWidth : " + mLeafWidth + "\n" +
-                       "mLeafHeight : " + mLeafHeight + "\n" +
-                       "mNodeSrc : " + mNodeSrc + "\n" +
-                       "mNodeWidth : " + mNodeWidth + "\n" +
-                       "mNodeHeight : " + mNodeHeight + "\n" +
-                       "mPadding : " + mPadding + "\n" +
-                       "mPaddingLeft : " + mPaddingLeft + "\n" +
-                       "mPaddingTop : " + mPaddingTop + "\n" +
-                       "mPaddingRight : " + mPaddingRight + "\n" +
-                       "mPaddingBottom : " + mPaddingBottom + "\n" +
-                       "mTreePadding : " + mTreePadding + "\n" +
-                       "mTreePaddingLeft : " + mTreePaddingLeft + "\n" +
-                       "mTreePaddingTop : " + mTreePaddingTop + "\n" +
-                       "mTreePaddingRight : " + mTreePaddingRight + "\n" +
-                       "mTreePaddingBottom : " + mTreePaddingBottom + "\n" +
-                       "mMarginRightItem : " + mMarginRightItem + "\n" +
-                       "mIndentValue : " + mIndentValue + "\n" +
-                       "mTrunkType : " + mTrunkType);
             typedArray.recycle();
         }
     }
@@ -649,6 +622,286 @@ public class TreeLayout extends ViewGroup {
             showTree(true);
         }
 
+    }
+
+    public int getLayoutGravity() {
+        return mLayoutGravity;
+    }
+
+    public void setLayoutGravity(int layoutGravity) {
+        this.mLayoutGravity = layoutGravity;
+    }
+
+    public int getTrunkWidth() {
+        return mTrunkWidth;
+    }
+
+    public void setTrunkWidth(int trunkWidth) {
+        this.mTrunkWidth = trunkWidth;
+    }
+
+    public int getTrunkColor() {
+        return mTrunkColor;
+    }
+
+    public void setTrunkColor(int trunkColor) {
+        this.mTrunkColor = trunkColor;
+    }
+
+    public boolean isShowBranch() {
+        return mIsShowBranch;
+    }
+
+    public void setIsShowBranch(boolean isShowBranch) {
+        this.mIsShowBranch = isShowBranch;
+    }
+
+    public boolean isCustomBranchEnable() {
+        return mIsCustomBranchEnable;
+    }
+
+    public void setIsCustomBranchEnable(boolean isCustomBranchEnable) {
+        this.mIsCustomBranchEnable = isCustomBranchEnable;
+    }
+
+    public int getBranchWidth() {
+        return mBranchWidth;
+    }
+
+    public void setBranchWidth(int branchWidth) {
+        this.mBranchWidth = branchWidth;
+    }
+
+    public int getBranchHeight() {
+        return mBranchHeight;
+    }
+
+    public void setBranchHeight(int branchHeight) {
+        this.mBranchHeight = branchHeight;
+    }
+
+    public int getBranchColor() {
+        return mBranchColor;
+    }
+
+    public void setBranchColor(int branchColor) {
+        this.mBranchColor = branchColor;
+    }
+
+    public boolean isShowNode() {
+        return mIsShowNode;
+    }
+
+    public void setIsShowNode(boolean isShowNode) {
+        this.mIsShowNode = isShowNode;
+    }
+
+    public int getNodeSrc() {
+        return mNodeSrc;
+    }
+
+    public void setNodeSrc(int nodeSrc) {
+        this.mNodeSrc = nodeSrc;
+    }
+
+    public Drawable getNodeDrawable() {
+        return mNodeDrawable;
+    }
+
+    public void setNodeDrawable(Drawable nodeDrawable) {
+        this.mNodeDrawable = nodeDrawable;
+    }
+
+    public int getNodeWidth() {
+        return mNodeWidth;
+    }
+
+    public void setNodeWidth(int nodeWidth) {
+        this.mNodeWidth = nodeWidth;
+    }
+
+    public int getNodeHeight() {
+        return mNodeHeight;
+    }
+
+    public void setNodeHeight(int nodeHeight) {
+        this.mNodeHeight = nodeHeight;
+    }
+
+    public boolean isShowLeaf() {
+        return mIsShowLeaf;
+    }
+
+    public void setIsShowLeaf(boolean isShowLeaf) {
+        this.mIsShowLeaf = isShowLeaf;
+    }
+
+    public int getLeafSrc() {
+        return mLeafSrc;
+    }
+
+    public void setLeafSrc(int leafSrc) {
+        this.mLeafSrc = leafSrc;
+    }
+
+    public Drawable getLeafDrawable() {
+        return mLeafDrawable;
+    }
+
+    public void setLeafDrawable(Drawable leafDrawable) {
+        this.mLeafDrawable = leafDrawable;
+    }
+
+    public int getLeafWidth() {
+        return mLeafWidth;
+    }
+
+    public void setLeafWidth(int leafWidth) {
+        this.mLeafWidth = leafWidth;
+    }
+
+    public int getLeafHeight() {
+        return mLeafHeight;
+    }
+
+    public void setLeafHeight(int leafHeight) {
+        this.mLeafHeight = leafHeight;
+    }
+
+    public int getPadding() {
+        return mPadding;
+    }
+
+    public void setPadding(int padding) {
+        this.mPadding = padding;
+    }
+
+    public int getPaddingLeft() {
+        return mPaddingLeft;
+    }
+
+    public void setPaddingLeft(int paddingLeft) {
+        this.mPaddingLeft = paddingLeft;
+    }
+
+    public int getPaddingTop() {
+        return mPaddingTop;
+    }
+
+    public void setPaddingTop(int paddingTop) {
+        this.mPaddingTop = paddingTop;
+    }
+
+    public int getPaddingRight() {
+        return mPaddingRight;
+    }
+
+    public void setPaddingRight(int paddingRight) {
+        this.mPaddingRight = paddingRight;
+    }
+
+    public int getPaddingBottom() {
+        return mPaddingBottom;
+    }
+
+    public void setPaddingBottom(int paddingBottom) {
+        this.mPaddingBottom = paddingBottom;
+    }
+
+    public int getTreePadding() {
+        return mTreePadding;
+    }
+
+    public void setTreePadding(int treePadding) {
+        this.mTreePadding = treePadding;
+    }
+
+    public int getTreePaddingLeft() {
+        return mTreePaddingLeft;
+    }
+
+    public void setTreePaddingLeft(int treePaddingLeft) {
+        this.mTreePaddingLeft = treePaddingLeft;
+    }
+
+    public int getTreePaddingTop() {
+        return mTreePaddingTop;
+    }
+
+    public void setTreePaddingTop(int treePaddingTop) {
+        this.mTreePaddingTop = treePaddingTop;
+    }
+
+    public int getTreePaddingRight() {
+        return mTreePaddingRight;
+    }
+
+    public void setTreePaddingRight(int treePaddingRight) {
+        this.mTreePaddingRight = treePaddingRight;
+    }
+
+    public int getTreePaddingBottom() {
+        return mTreePaddingBottom;
+    }
+
+    public void setTreePaddingBottom(int treePaddingBottom) {
+        this.mTreePaddingBottom = treePaddingBottom;
+    }
+
+    public int getMarginRightItem() {
+        return mMarginRightItem;
+    }
+
+    public void setMarginRightItem(int marginRightItem) {
+        this.mMarginRightItem = marginRightItem;
+    }
+
+    public int getIndentValue() {
+        return mIndentValue;
+    }
+
+    public void setIndentValue(int indentValue) {
+        this.mIndentValue = indentValue;
+    }
+
+    public boolean isLinkIndented() {
+        return mIsLinkIndented;
+    }
+
+    public void setIsLinkIndented(boolean isLinkIndented) {
+        this.mIsLinkIndented = isLinkIndented;
+    }
+
+    public boolean isUseDefaultAnimation() {
+        return mUseDefaultAnimation;
+    }
+
+    public void setUseDefaultAnimation(boolean useDefaultAnimation) {
+        this.mUseDefaultAnimation = useDefaultAnimation;
+    }
+
+    public boolean isTreeExpanded() {
+        return mIsTreeExpanded;
+    }
+
+    public void setIsTreeExpanded(boolean isTreeExpanded) {
+        this.mIsTreeExpanded = isTreeExpanded;
+    }
+
+    public boolean isToggleEnable() {
+        return mIsToggleEnable;
+    }
+
+    public void setIsToggleEnable(boolean isToggleEnable) {
+        this.mIsToggleEnable = isToggleEnable;
+    }
+
+    public int getTrunkType() {
+        return mTrunkType;
+    }
+
+    public void setTrunkType(int trunkType) {
+        this.mTrunkType = trunkType;
     }
 
     public static class LayoutParams extends ViewGroup.MarginLayoutParams {
