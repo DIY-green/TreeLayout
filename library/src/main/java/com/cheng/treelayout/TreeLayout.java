@@ -423,21 +423,19 @@ public class TreeLayout extends ViewGroup {
         //==========开始绘制==========//
         prepareTrunkPaint();
         drawTrunk(canvas);
-        prepareBranchPaint();
-        drawBranch(canvas);
-        drawNodeLeaf(mBranchCoordinateArr, canvas);
+        // TODO
+        if (mIsShowBranch) {
+            prepareBranchPaint();
+            canvas.drawLines(mBranchCoordinateArr, mPaint);
+        }
+        drawBranchNodeLeaf(mBranchCoordinateArr, canvas);
     }
 
     private void drawTrunk(Canvas canvas) {
         canvas.drawLines(mTrunkCoordinateArr, mPaint);
     }
 
-    private void drawBranch(Canvas canvas) {
-        if (!mIsShowBranch) return;
-        canvas.drawLines(mBranchCoordinateArr, mPaint);
-    }
-
-    private void drawNodeLeaf(float[] branchPointArr, Canvas canvas) {
+    private void drawBranchNodeLeaf(float[] branchCoordinateArr, Canvas canvas) {
         if (!mIsShowNode && !mIsShowLeaf) return; // 如果枝节点和叶子都不展示，那么就不需要绘制
         int nodeCenterX; // 枝节点中心 X
         int nodeCenterY; // 枝节点中心 Y
@@ -449,11 +447,11 @@ public class TreeLayout extends ViewGroup {
         int leafVRadius = mLeafHeight / 2;
         Drawable nodeDrawable;
         Drawable leafDrawable;
-        for (int i = 0, childIndex, count = branchPointArr.length; i < count; i+=4) {
-            nodeCenterX = (int) branchPointArr[i];
-            nodeCenterY = (int) branchPointArr[i+1];
-            leafCenterX = (int) branchPointArr[i+2];
-            leafCenterY = (int) branchPointArr[i+3];
+        for (int i = 0, childIndex, count = branchCoordinateArr.length; i < count; i+=4) {
+            nodeCenterX = (int) branchCoordinateArr[i];
+            nodeCenterY = (int) branchCoordinateArr[i+1];
+            leafCenterX = (int) branchCoordinateArr[i+2];
+            leafCenterY = (int) branchCoordinateArr[i+3];
             childIndex = mBranchIndexArr[i / 4];
             nodeDrawable = mNodeDrawable;
             leafDrawable = mLeafDrawable;

@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/indigo"
     tools:context="com.cheng.treelayoutdemo.MainActivity">
 
     <com.cheng.treelayout.TreeLayout
         android:id="@+id/tl_test"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:leafSrc="@drawable/leaf_circle"
         app:nodeSrc="@color/red"
         app:indentValue="20dp"
@@ -36,7 +37,10 @@
             app:customLeafSrc="@color/black"
             app:customNodeSrc="@drawable/indigo_circle"
             app:indentLevel="1"
-            app:itemType="normal"/>
+            app:itemType="normal"
+            app:customBranchColor="@color/black"
+            app:customBranchWidth="20dp"
+            app:customBranchHeight="10dp"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -50,7 +54,10 @@
             android:orientation="vertical"
             app:branchTargetIndex="1"
             app:customLeafSrc="@color/red"
-            app:customNodeSrc="@drawable/blue_circle">
+            app:customNodeSrc="@drawable/blue_circle"
+            app:customBranchColor="@color/red"
+            app:customBranchWidth="70dp"
+            app:customBranchHeight="2dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
@@ -72,6 +79,9 @@
             android:background="@color/red"
             app:customLeafSrc="@color/orange"
             app:customNodeSrc="@drawable/green_circle"
+            app:customBranchColor="@color/orange"
+            app:customBranchWidth="50dp"
+            app:customBranchHeight="6dp"
             app:offsetTargetTop="0dp"
             app:indentLevel="3"
             app:itemType="normal"/>
@@ -89,6 +99,9 @@
             android:background="@color/green"
             app:customLeafSrc="@color/yellow"
             app:customNodeSrc="@drawable/purple_circle"
+            app:customBranchColor="@color/yellow"
+            app:customBranchWidth="10dp"
+            app:customBranchHeight="10dp"
             app:indentLevel="0"
             app:itemType="normal"/>
         <TextView
@@ -117,6 +130,9 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:text="9-TEST_NORMAL_ITEM"
+            app:customBranchColor="@color/blue"
+            app:customBranchWidth="100dp"
+            app:customBranchHeight="7dp"
             app:indentLevel="1"
             app:itemType="normal"/>
         <TextView
