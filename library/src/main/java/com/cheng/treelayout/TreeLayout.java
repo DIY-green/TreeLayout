@@ -32,7 +32,7 @@ public class TreeLayout extends ViewGroup {
     private static final int TRUNK_COLOR          = 0XFF909090;       // 默认主干颜色
     private static final int BRANCH_COLOR         = 0XFF909090;       // 默认横枝颜色
     private static final boolean DEFAULT_FALSE    = false;            // 默认 false
-    private static final boolean DEFAULT_TURE     = true;             // 默认 true
+    private static final boolean DEFAULT_TRUE     = true;             // 默认 true
     private static final int DEFAULT_RES          = 0;                // 默认 Res 值
     private static final int LEAF_WIDTH           = 30;               // 默认叶子的宽度
     private static final int LEAF_HEIGHT          = 30;               // 默认叶子的高度
@@ -160,7 +160,7 @@ public class TreeLayout extends ViewGroup {
             mLayoutGravity = typedArray.getInt(R.styleable.TreeLayout_android_layout_gravity, Gravity.LEFT);
             mTrunkWidth = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_trunkWidth, TRUNK_WIDTH);
             mTrunkColor = typedArray.getColor(R.styleable.TreeLayout_trunkColor, TRUNK_COLOR);
-            mIsShowBranch = typedArray.getBoolean(R.styleable.TreeLayout_isShowBranch, DEFAULT_TURE);
+            mIsShowBranch = typedArray.getBoolean(R.styleable.TreeLayout_isShowBranch, DEFAULT_TRUE);
             mBranchWidth = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_branchWidth, BRANCH_WIDTH);
             mBranchHeight = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_branchHeight, BRANCH_HEIGHT);
             mBranchColor = typedArray.getColor(R.styleable.TreeLayout_branchColor, BRANCH_COLOR);
