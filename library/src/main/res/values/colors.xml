@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorBranch">#909090</color>
+    <color name="colorTrunk">#5D5D5D</color>
+    <color name="colorNode">#000000</color>
+    <color name="colorLeaf">#00ff00</color>
+
+    <color name="red">#ff0000</color>
+    <color name="black">#000000</color>
+
+</resources>

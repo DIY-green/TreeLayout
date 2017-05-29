@@ -1,0 +1,10 @@
+<resources>
+
+    <!-- Base TreeLayout theme. -->
+    <style name="TreeLayoutDefaultStyle.Tree">
+        <item name="trunkColor">@color/red</item>
+        <item name="branchColor">@color/black</item>
+        <item name="isLinkIndented">true</item>
+    </style>
+
+</resources>

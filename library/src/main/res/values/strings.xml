@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Library</string>
+    <string name="treelayout_item_confusion_message">TreeLayout 中的条目类型混乱，确保所有的 Header 集中在顶部，所有的 Footer 集中在底部，其中不能有其他条目穿插。</string>
+</resources>
