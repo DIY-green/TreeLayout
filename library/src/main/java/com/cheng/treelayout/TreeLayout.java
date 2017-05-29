@@ -12,9 +12,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
-import android.widget.LinearLayout;
 
 import com.cheng.treelayout.exception.ItemConfusionException;
 
@@ -88,6 +85,7 @@ public class TreeLayout extends ViewGroup {
     private boolean mIsLinkIndented;            // TreeLayout 的横枝是否连接到缩进的条目
     private boolean mUseDefaultAnimation;       // TreeLayout 的展开收起是否使用默认动画
     private boolean mIsTreeExpanded;            // TreeLayout 的树形结构是否正在展示
+    private boolean mIsToggleEnable;            // TreeLayout 的树形结构是否允许展开/折叠操作
     private int mTrunkType;                     // TreeLayout 主干类型：普通的目录树、通栏
 
     //==========坐标计算相关==========//
@@ -143,6 +141,7 @@ public class TreeLayout extends ViewGroup {
         this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!mIsToggleEnable) return;
                 if (mIsTreeExpanded) {
                     collapseTree();
                 } else {
@@ -194,6 +193,7 @@ public class TreeLayout extends ViewGroup {
             mIsLinkIndented = typedArray.getBoolean(R.styleable.TreeLayout_isLinkIndented, LINK_INDENTED);
             mUseDefaultAnimation = typedArray.getBoolean(R.styleable.TreeLayout_useDefaultAnimation, USE_ANIMATION);
             mIsTreeExpanded = typedArray.getBoolean(R.styleable.TreeLayout_isTreeExpanded, TREE_EXPANDED);
+            mIsToggleEnable = typedArray.getBoolean(R.styleable.TreeLayout_isToggleEnable, DEFAULT_TRUE);
             mTrunkType = typedArray.getInt(R.styleable.TreeLayout_trunkType, DEFAULT_TRUNK_TYPE);
             Log.e(TAG, "mBackground : " + mBackground + "\n" +
                        "mLayoutGravity : " + mLayoutGravity + "\n" +
@@ -622,29 +622,7 @@ public class TreeLayout extends ViewGroup {
     private void collapseTree() {
         if (checkTreeItemRange()) return;
         if (mUseDefaultAnimation) {
-            // TODO 动画有问题
-            for (int i = mFirstNormalItemIndex; i <= mLastNormalItemIndex; i++) {
-                final View v = getChildAt(i);
-                final int initialHeight = v.getMeasuredHeight();
-                Animation a = new Animation() {
-                    @Override
-                    protected void applyTransformation(float interpolatedTime, Transformation t) {
-                        if (interpolatedTime == 1) {
-                            v.setVisibility(View.GONE);
-                        } else {
-                            v.getLayoutParams().height = initialHeight - (int) (initialHeight * interpolatedTime);
-                            v.requestLayout();
-                        }
-                    }
-                    @Override
-                    public boolean willChangeBounds() {
-                        return true;
-                    }
-                };
-                // 1dp/ms
-                a.setDuration((int) (initialHeight / v.getContext().getResources().getDisplayMetrics().density));
-                v.startAnimation(a);
-            }
+
         } else {
             showTree(false);
         }
@@ -666,32 +644,7 @@ public class TreeLayout extends ViewGroup {
     private void expandTree() {
         if (checkTreeItemRange()) return;
         if (mUseDefaultAnimation) {
-            // TODO 动画有问题
-            for (int i = mFirstNormalItemIndex; i < mLastNormalItemIndex; i++) {
-                final View v = getChildAt(i);
-                v.measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                final int targetHeight = v.getMeasuredHeight();
-                v.getLayoutParams().height = 0;
-                v.setVisibility(View.VISIBLE);
-                Animation a = new Animation() {
-                    @Override
-                    protected void applyTransformation(float interpolatedTime, Transformation t) {
-                        v.getLayoutParams().height = interpolatedTime == 1
-                                ? LinearLayout.LayoutParams.WRAP_CONTENT
-                                : (int) (targetHeight * interpolatedTime);
-                        v.requestLayout();
-                    }
 
-                    @Override
-                    public boolean willChangeBounds() {
-                        return true;
-                    }
-                };
-
-                // 1dp/ms
-                a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
-                v.startAnimation(a);
-            }
         } else {
             showTree(true);
         }

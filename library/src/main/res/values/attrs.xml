@@ -65,6 +65,8 @@
         <attr name="useDefaultAnimation" format="boolean"/>
         <!-- 树的展开状态 -->
         <attr name="isTreeExpanded" format="boolean"/>
+        <!-- 树是否允许展开/折叠操作 -->
+        <attr name="isToggleEnable" format="boolean"/>
         <!-- 主干类型 -->
         <attr name="trunkType">
             <!-- 默认为普通类型：目录树 -->
@@ -141,6 +143,7 @@
         <item name="isLinkIndented">false</item>
         <item name="useDefaultAnimation">false</item>
         <item name="isTreeExpanded">true</item>
+        <item name="isToggleEnable">true</item>
         <item name="trunkType">normal</item>
     </style>
 

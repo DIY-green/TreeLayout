@@ -99,7 +99,7 @@
             android:background="@color/green"
             app:customLeafSrc="@color/yellow"
             app:customNodeSrc="@drawable/purple_circle"
-            app:customBranchColor="@color/yellow"
+            app:customBranchColor="@color/black"
             app:customBranchWidth="10dp"
             app:customBranchHeight="10dp"
             app:indentLevel="0"
