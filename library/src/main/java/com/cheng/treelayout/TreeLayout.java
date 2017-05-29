@@ -87,17 +87,17 @@ public class TreeLayout extends ViewGroup {
     //==========坐标计算相关==========//
     private int mBranchCount;                   // 所有横枝（也是枝节点）的数量
     private int mTotalHeight;                   // 所有条目占据的总高度
-    private int mHeaderTotalHeight;             // 所有头部条目占据的总高度
-    private int mFooterTotalHeight;             // 所有底部条目占据的总高度
+//    private int mHeaderTotalHeight;             // 所有头部条目占据的总高度
+//    private int mFooterTotalHeight;             // 所有底部条目占据的总高度
     private int mTreeWidth;                     // TreeLayout 左侧树形结构所占宽度
-    private float[] mBranchCoordinateArr;       // 所有横枝坐标数组
-    private float[] mTrunkCoordinateArr;        // 主干坐标数组
-    private float mBranchStartX;                // 所有的横枝起点X
-    private float mBranchEndX;                  // 所有的横枝终点X
     private int mFirstTreeItemIndex;            // 树形结构中第一个条目（非 Header/Footer）的位置
     private int mLastTreeItemIndex;             // 树形结构中最后一个条目（非 Header/Footer）的位置
     private int mFirstNormalItemIndex;          // 第一个普通条目的位置
     private int mLastNormalItemIndex;           // 最后一个普通条目的位置
+    private float[] mBranchCoordinateArr;       // 所有横枝坐标数组
+    private float[] mTrunkCoordinateArr;        // 主干坐标数组
+    private float mBranchStartX;                // 所有的横枝起点X
+    private float mBranchEndX;                  // 所有的横枝终点X
     private float mTrunkStartX;                 // 主干起点X
     private float mTrunkStartY;                 // 主干起点Y
     private float mTrunkEndX;                   // 主干终点X

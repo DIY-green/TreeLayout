@@ -32,12 +32,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="0-=====LABEL====="
-            app:indentLevel="0"
-            app:itemType="label"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="1-TEST_NORMAL_ITEM"
             app:indentLevel="1"
             app:itemType="normal"/>
@@ -49,9 +43,10 @@
             app:itemType="label"/>
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="60dp"
             android:gravity="center_vertical"
             android:text="3-TEST_NORMAL_ITEM"
+            android:background="@color/red"
             app:indentLevel="3"
             app:itemType="normal"/>
         <TextView
@@ -62,9 +57,10 @@
             app:itemType="normal"/>
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="60dp"
             android:gravity="center_vertical"
             android:text="5-TEST_NORMAL_ITEM"
+            android:background="@color/green"
             app:indentLevel="0"
             app:itemType="normal"/>
         <TextView
@@ -75,9 +71,10 @@
             app:itemType="normal"/>
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="60dp"
             android:gravity="center_vertical"
             android:text="7-TEST_NORMAL_ITEM"
+            android:background="@color/blue"
             app:indentLevel="0"
             app:itemType="normal"/>
         <TextView
