@@ -12,11 +12,11 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
+import android.widget.LinearLayout;
 
 import com.cheng.treelayout.exception.ItemConfusionException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by diygreen on 2017/5/28.
@@ -39,8 +39,10 @@ public class TreeLayout extends ViewGroup {
     private static final int DEFAULT_PADDING      = 0;                // 默认缩进
     private static final int MARGIN_RIGHT_ITEM    = 0;                // 默认与右侧条目间距
     private static final int INDENT_VALUE         = 30;               // 默认条目的缩进值
-    private static final int INDENT_LEVEL         = 1;                // 默认条目的缩进级别
+    private static final int DEFAULT_INDENT_LEVEL = 0;                // 默认条目的缩进级别：不缩进
     private static final boolean LINK_INDENTED    = false;            // 默认不连接到缩进的条目
+    private static final boolean USE_ANIMATION    = true;             // 默认使用默认的展开关闭动画
+    private static final boolean TREE_EXPANDED    = true;             // 默认树是展开的
     private static final int DEFAULT_TRUNK_TYPE   = 0;                // 默认主干类型为 normal
     private static final int TRUNK_TYPE_NORMAL    = 0;                // 主干类型 normal
     private static final int TRUNK_TYPE_FULL      = 1;                // 主干类型 full
@@ -78,23 +80,24 @@ public class TreeLayout extends ViewGroup {
     private int mMarginRightItem;               // TreeLayout 树形结构与右侧 Item 的间距
     private int mIndentValue;                   // TreeLayout 中条目的缩进值
     private boolean mIsLinkIndented;            // TreeLayout 的横枝是否连接到缩进的条目
+    private boolean mUseDefaultAnimation;       // TreeLayout 的展开收起是否使用默认动画
+    private boolean mIsTreeExpanded;            // TreeLayout 的树形结构是否正在展示
     private int mTrunkType;                     // TreeLayout 主干类型：普通的目录树、通栏
 
     //==========坐标计算相关==========//
-    private List<Integer> mItemTypeList;        // 保存所有条目类型的集合
-    private List<ItemVO> mItemVOList;           // 保存所有条目类型 VO 的集合
     private int mBranchCount;                   // 所有横枝（也是枝节点）的数量
     private int mTotalHeight;                   // 所有条目占据的总高度
     private int mHeaderTotalHeight;             // 所有头部条目占据的总高度
     private int mFooterTotalHeight;             // 所有底部条目占据的总高度
     private int mTreeWidth;                     // TreeLayout 左侧树形结构所占宽度
-    private boolean mHasNormalItem;             // 是否含有普通条目
-    private float[] mBranchPointArr;
-    private float[] mTrunkLine;
+    private float[] mBranchCoordinateArr;       // 所有横枝坐标数组
+    private float[] mTrunkCoordinateArr;        // 主干坐标数组
     private float mBranchStartX;                // 所有的横枝起点X
     private float mBranchEndX;                  // 所有的横枝终点X
-    private int mFirstItemViewIndex;            // 第一个条目 View 的位置
-    private int mLastItemViewIndex;             // 最后一个条目 View 的位置
+    private int mFirstTreeItemIndex;            // 树形结构中第一个条目（非 Header/Footer）的位置
+    private int mLastTreeItemIndex;             // 树形结构中最后一个条目（非 Header/Footer）的位置
+    private int mFirstNormalItemIndex;          // 第一个普通条目的位置
+    private int mLastNormalItemIndex;           // 最后一个普通条目的位置
     private float mTrunkStartX;                 // 主干起点X
     private float mTrunkStartY;                 // 主干起点Y
     private float mTrunkEndX;                   // 主干终点X
@@ -102,8 +105,6 @@ public class TreeLayout extends ViewGroup {
 
     //==========绘制相关==========//
     private Paint mPaint;                       // 全局画笔绘制的时候按需修改
-//    private Paint mTrunkPaint;                  // 绘制树干的画笔
-//    private Paint mBranchPaint;                 // 绘制横枝的画笔
 
     public TreeLayout(Context context) {
         this(context, null);
@@ -129,6 +130,21 @@ public class TreeLayout extends ViewGroup {
         initAttrs(context, attrs, defStyleAttr);
         initData();
         initPaint();
+        initListener();
+    }
+
+    private void initListener() {
+        this.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mIsTreeExpanded) {
+                    collapseTree();
+                } else {
+                    expandTree();
+                }
+                mIsTreeExpanded = !mIsTreeExpanded;
+            }
+        });
     }
 
     private void initAttrs(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -169,6 +185,8 @@ public class TreeLayout extends ViewGroup {
             mMarginRightItem = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_marginRightItem, MARGIN_RIGHT_ITEM);
             mIndentValue = typedArray.getDimensionPixelOffset(R.styleable.TreeLayout_indentValue, INDENT_VALUE);
             mIsLinkIndented = typedArray.getBoolean(R.styleable.TreeLayout_isLinkIndented, LINK_INDENTED);
+            mUseDefaultAnimation = typedArray.getBoolean(R.styleable.TreeLayout_useDefaultAnimation, USE_ANIMATION);
+            mIsTreeExpanded = typedArray.getBoolean(R.styleable.TreeLayout_isTreeExpand, TREE_EXPANDED);
             mTrunkType = typedArray.getInt(R.styleable.TreeLayout_trunkType, DEFAULT_TRUNK_TYPE);
             Log.e(TAG, "mBackground : " + mBackground + "\n" +
                        "mLayoutGravity : " + mLayoutGravity + "\n" +
@@ -201,15 +219,13 @@ public class TreeLayout extends ViewGroup {
     }
 
     private void initData() {
-        mItemTypeList = new ArrayList<>();
-        mItemVOList = new ArrayList<>();
         mTreeWidth = mTreePaddingLeft + mTreePaddingRight + mTrunkWidth + mBranchWidth + mMarginRightItem;
         mBranchStartX = mPaddingLeft + mTreePaddingLeft;
         mBranchEndX = mBranchStartX + mTrunkWidth + mBranchWidth;
         mTrunkStartX = mBranchStartX;
         mTrunkEndX = mBranchStartX;
-        mHasNormalItem = false;
-        mTrunkLine = new float[4];
+//        mHasNormalItem = false;
+        mTrunkCoordinateArr = new float[4];
     }
 
     private void initPaint() {
@@ -291,20 +307,16 @@ public class TreeLayout extends ViewGroup {
             if (childView.getVisibility() == GONE) continue;
             childTop = layoutChildByItemType(childTop, childView, layoutParams);
 
-            // TODO 在 Layout 的时候确定所有需要绘制的坐标
-            ItemVO itemVO = ItemVO.newInstance(childView, layoutParams);
-            mItemVOList.add(itemVO);
-            Log.e(TAG, mItemVOList.toString());
+            // 在 onLayout 的时候确定所有需要绘制的坐标
             if (layoutParams.itemType == ITEM_TYPE_NORMAL) {
-                mBranchCount++;
                 int branchY = calculateChildViewLeftCenterY(childView);
-                mBranchPointArr[j++] = mBranchStartX;
-                mBranchPointArr[j++] = branchY;
-                mBranchPointArr[j++] = mIsLinkIndented ? childView.getLeft() - mMarginRightItem - mTreePaddingRight : mBranchEndX;
-                mBranchPointArr[j++] = branchY;
-                if (i == mFirstItemViewIndex) {
+                mBranchCoordinateArr[j++] = mBranchStartX;
+                mBranchCoordinateArr[j++] = branchY;
+                mBranchCoordinateArr[j++] = mIsLinkIndented ? childView.getLeft() - mMarginRightItem - mTreePaddingRight : mBranchEndX;
+                mBranchCoordinateArr[j++] = branchY;
+                if (i == mFirstNormalItemIndex) {
                     mTrunkStartY = branchY;
-                } else if (i == mLastItemViewIndex) {
+                } else if (i == mLastNormalItemIndex) {
                     mTrunkEndY = branchY;
                 }
             }
@@ -319,13 +331,15 @@ public class TreeLayout extends ViewGroup {
             mTrunkStartY -= mTreePaddingTop;
             mTrunkEndY -= mTreePaddingBottom;
         }
-        mTrunkLine[0] = mTrunkStartX;
-        mTrunkLine[1] = mTrunkStartY;
-        mTrunkLine[2] = mTrunkEndX;
-        mTrunkLine[3] = mTrunkEndY;
+        mTrunkCoordinateArr[0] = mTrunkStartX;
+        mTrunkCoordinateArr[1] = mTrunkStartY;
+        mTrunkCoordinateArr[2] = mTrunkEndX;
+        mTrunkCoordinateArr[3] = mTrunkEndY;
     }
 
     private int calculateChildViewLeftCenterY(View childView) {
+        // TODO 需要根据 childView 中指定的，横枝指向的 View 以及所指向 View 顶部的偏移值来确定
+        // TODO 如果没有明确指定的指向 View，则取 childView 的第一个孩子，如果没有明确的偏移值，则取指向 View 垂直方向的中点
         return childView.getTop() + childView.getMeasuredHeight() / 2;
     }
 
@@ -346,7 +360,7 @@ public class TreeLayout extends ViewGroup {
                 //      paddingTop
                 //      leftMargin
                 //      topMargin
-                // 的影响
+                // 的影响，Header 是在树形结构之上的
                 childLeft -= mTreeWidth;
                 break;
             case ITEM_TYPE_NORMAL:
@@ -367,33 +381,21 @@ public class TreeLayout extends ViewGroup {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        // 如果不包含普通 Item 就不需要绘制的左侧树形结构
-        if (!mHasNormalItem) return;
-        int itemSize = mItemVOList.size();
-        if (itemSize < 1) return;
+        //==========排除不需要绘制的情况==========//
+        if (!mIsTreeExpanded) return;
+        if (mBranchCount < 1) return; // 如果不包含普通 Item 就不需要绘制的左侧树形结构
         int childCount = getChildCount();
         if (childCount <= 1) return;
 
         //==========开始绘制==========//
-
         prepareTrunkPaint();
-        canvas.drawLines(mTrunkLine, mPaint);
+        canvas.drawLines(mTrunkCoordinateArr, mPaint);
         prepareBranchPaint();
-        // 指定跳过前 offset 个数据，取出 count 个数据绘制直线
-        int dataCount = mBranchCount * 4;
-        canvas.drawLines(mBranchPointArr, 0, dataCount, mPaint);               //有选择地绘制直线
-        drawNodeLeaf(mBranchPointArr, dataCount, canvas);
-
-        /*// TODO 下面是一些测试代码
-        if (mLeafDrawable != null) {
-            mLeafDrawable.setBounds(60, 60, 100, 100);
-            mNodeDrawable.setBounds(90, 90, 150, 150);
-            mLeafDrawable.draw(canvas);
-            mNodeDrawable.draw(canvas);
-        }*/
+        canvas.drawLines(mBranchCoordinateArr, mPaint);               //有选择地绘制直线
+        drawNodeLeaf(mBranchCoordinateArr, canvas);
     }
 
-    private void drawNodeLeaf(float[] branchPointArr, int dataCount, Canvas canvas) {
+    private void drawNodeLeaf(float[] branchPointArr, Canvas canvas) {
         int nodeCenterX; // 枝节点中心 X
         int nodeCenterY; // 枝节点中心 Y
         int leafCenterX; // 叶子中心 X
@@ -402,7 +404,7 @@ public class TreeLayout extends ViewGroup {
         int nodeVRadius = mNodeHeight / 2;
         int leafHRadius = mLeafWidth / 2;
         int leafVRadius = mLeafHeight / 2;
-        for (int i = 0; i < dataCount; i+=4) {
+        for (int i = 0, count = branchPointArr.length; i < count; i+=4) {
             nodeCenterX = (int) branchPointArr[i];
             nodeCenterY = (int) branchPointArr[i+1];
             leafCenterX = (int) branchPointArr[i+2];
@@ -433,14 +435,12 @@ public class TreeLayout extends ViewGroup {
      * Footer 可以有多个，但是 Footer 必须在底部，也就是 Footer 中间和下面不能有其他类型的 Item
      */
     private void vertifyItemType() {
-        mFirstItemViewIndex = -1;
-        mLastItemViewIndex = -1;
+        mFirstNormalItemIndex = -1;
+        mLastNormalItemIndex = -1;
+        mFirstTreeItemIndex = -1;
+        mLastTreeItemIndex = -1;
+        mBranchCount = 0;
         int count = getChildCount();
-        if (count < 1) {
-            mHasNormalItem = false;
-            return;
-        }
-        mBranchPointArr = new float[count<<2];
         int firstHeaderIndex = -1;
         int firstFooterIndex = -1;
         int lastHeaderIndex = -1;
@@ -465,12 +465,12 @@ public class TreeLayout extends ViewGroup {
                 }
             } else {
                 if (itemType == ITEM_TYPE_NORMAL) {
-                    if (mFirstItemViewIndex < 0) {
-                        mFirstItemViewIndex = i;
+                    mBranchCount++;
+                    if (mFirstNormalItemIndex < 0) {
+                        mFirstNormalItemIndex = i;
                     }
-                    mLastItemViewIndex = i;
+                    mLastNormalItemIndex = i;
                 }
-                mHasNormalItem = true;
                 // 有其他条目在 Header 中，或者 Header 并没有全部集中在顶部
                 if (i < firstHeaderIndex
                         || (lastHeaderIndex > 0 && i < lastHeaderIndex)
@@ -480,14 +480,21 @@ public class TreeLayout extends ViewGroup {
                 }
             }
         }
-        // 这种方式不靠谱，如果最后一个 Header 后面跟的不是 normal 类型的 Item 则计算错误
-//        mFirstItemViewIndex = lastHeaderIndex + 1;
+        mBranchCoordinateArr = new float[mBranchCount<<2];
         // 如果定位到的第一条和最后一条 ItemView 越界，则置为 -1
-        if (mFirstItemViewIndex >= count) {
-            mFirstItemViewIndex = -1;
+        if (mFirstNormalItemIndex >= count) {
+            mFirstNormalItemIndex = -1;
         }
-        if (mLastItemViewIndex < 0 || mLastItemViewIndex >= count) {
-            mLastItemViewIndex = -1;
+        if (mLastNormalItemIndex < 0 || mLastNormalItemIndex >= count) {
+            mLastNormalItemIndex = -1;
+        }
+        mFirstTreeItemIndex = lastHeaderIndex + 1;
+        mLastTreeItemIndex = firstFooterIndex - 1;
+        if (mFirstTreeItemIndex < 0 || mFirstTreeItemIndex >= count) {
+            mFirstTreeItemIndex = 0;
+        }
+        if (mLastTreeItemIndex < 0 || mLastTreeItemIndex >= count) {
+            mLastTreeItemIndex = count;
         }
     }
 
@@ -507,6 +514,86 @@ public class TreeLayout extends ViewGroup {
     @Override
     protected LayoutParams generateDefaultLayoutParams() {
         return new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    }
+
+    //==========逻辑方法==========//
+    private void collapseTree() {
+        if (checkTreeItemRange()) return;
+        if (mUseDefaultAnimation) {
+            // TODO 动画有问题
+            for (int i = mFirstNormalItemIndex; i <= mLastNormalItemIndex; i++) {
+                final View v = getChildAt(i);
+                final int initialHeight = v.getMeasuredHeight();
+                Animation a = new Animation() {
+                    @Override
+                    protected void applyTransformation(float interpolatedTime, Transformation t) {
+                        if (interpolatedTime == 1) {
+                            v.setVisibility(View.GONE);
+                        } else {
+                            v.getLayoutParams().height = initialHeight - (int) (initialHeight * interpolatedTime);
+                            v.requestLayout();
+                        }
+                    }
+                    @Override
+                    public boolean willChangeBounds() {
+                        return true;
+                    }
+                };
+                // 1dp/ms
+                a.setDuration((int) (initialHeight / v.getContext().getResources().getDisplayMetrics().density));
+                v.startAnimation(a);
+            }
+        } else {
+            showTree(false);
+        }
+    }
+
+    private boolean checkTreeItemRange() {
+        if (mFirstTreeItemIndex < 0
+                || mLastTreeItemIndex < 0
+                || mLastTreeItemIndex <= mFirstTreeItemIndex) return true;
+        return false;
+    }
+
+    private void showTree(boolean isShow) {
+        for (int i = mFirstTreeItemIndex; i <= mLastTreeItemIndex; i++) {
+            getChildAt(i).setVisibility(isShow ? VISIBLE : GONE);
+        }
+    }
+
+    private void expandTree() {
+        if (checkTreeItemRange()) return;
+        if (mUseDefaultAnimation) {
+            // TODO 动画有问题
+            for (int i = mFirstNormalItemIndex; i < mLastNormalItemIndex; i++) {
+                final View v = getChildAt(i);
+                v.measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                final int targetHeight = v.getMeasuredHeight();
+                v.getLayoutParams().height = 0;
+                v.setVisibility(View.VISIBLE);
+                Animation a = new Animation() {
+                    @Override
+                    protected void applyTransformation(float interpolatedTime, Transformation t) {
+                        v.getLayoutParams().height = interpolatedTime == 1
+                                ? LinearLayout.LayoutParams.WRAP_CONTENT
+                                : (int) (targetHeight * interpolatedTime);
+                        v.requestLayout();
+                    }
+
+                    @Override
+                    public boolean willChangeBounds() {
+                        return true;
+                    }
+                };
+
+                // 1dp/ms
+                a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
+                v.startAnimation(a);
+            }
+        } else {
+            showTree(true);
+        }
+
     }
 
     public static class LayoutParams extends ViewGroup.MarginLayoutParams {

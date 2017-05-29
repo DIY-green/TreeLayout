@@ -59,6 +59,10 @@
         <attr name="indentValue" format="dimension"/>
         <!-- 是否连接到缩进的条目 -->
         <attr name="isLinkIndented" format="boolean"/>
+        <!-- 是否使用默认动画展开收起 -->
+        <attr name="useDefaultAnimation" format="boolean"/>
+        <!-- 树的展开状态 -->
+        <attr name="isTreeExpand" format="boolean"/>
         <!-- 主干类型 -->
         <attr name="trunkType">
             <!-- 默认为普通类型：目录树 -->
@@ -91,6 +95,10 @@
         <attr name="customNodeHeight" format="dimension"/>
         <!-- Item 缩进级别 -->
         <attr name="indentLevel" format="integer"/>
+        <!-- 是否是横枝指向的条目 -->
+        <attr name="isBranchDirector" format="integer"/>
+        <!-- 横枝距离指向条目顶部的偏移值 -->
+        <attr name="offsetItemTop" format="dimension"/>
         <!-- Item 条目类型 -->
         <attr name="itemType">
             <!-- 默认为普通类型：左侧有横枝 -->
@@ -130,6 +138,8 @@
         <item name="marginRightItem">15dp</item>
         <item name="indentValue">10dp</item>
         <item name="isLinkIndented">false</item>
+        <item name="useDefaultAnimation">false</item>
+        <item name="isTreeExpand">true</item>
         <item name="trunkType">normal</item>
     </style>
 

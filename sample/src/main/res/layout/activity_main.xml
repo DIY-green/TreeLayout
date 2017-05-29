@@ -32,6 +32,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="0-=====LABEL====="
+            app:indentLevel="0"
+            app:itemType="label"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="1-TEST_NORMAL_ITEM"
             app:indentLevel="1"
             app:itemType="normal"/>
