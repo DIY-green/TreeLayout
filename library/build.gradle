@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 25
@@ -28,4 +29,13 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
+}
+
+publish {
+    userOrg = 'diy-cheng'
+    groupId = 'com.cheng.diyview'
+    artifactId = 'TreeLayout'
+    publishVersion = '1.0.0'
+    desc = 'TreeLayout 树形布局，提供多种自定义属性方便定制出各种各样的树形结构，当然实现时间轴更是不在话下。'
+    website = 'https://github.com/DIY-green/TreeLayout'
 }
