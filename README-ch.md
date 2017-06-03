@@ -5,8 +5,6 @@
 [![API](https://img.shields.io/badge/API-14%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=14)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-
-# TreeLayout
 TreeLayout 树形布局，提供多种自定义属性方便定制出各种各样的树形结构，当然实现时间轴更是不在话下。
 
 # 目前效果
