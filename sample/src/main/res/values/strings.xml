@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TreeLayout</string>
+    <string name="directory_tree">Directory Tree</string>
+    <string name="custom_attribute">Custom Attribute</string>
 </resources>

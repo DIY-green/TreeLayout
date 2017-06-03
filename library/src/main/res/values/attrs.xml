@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Item 类型的枚举值 -->
+
     <declare-styleable name="TreeLayout">
         <!-- 背景色 -->
         <attr name="android:background"/>
@@ -129,16 +129,12 @@
         <item name="branchHeight">2dp</item>
         <item name="branchColor">@color/colorBranch</item>
         <item name="isShowLeaf">true</item>
-        <item name="leafSrc">@drawable/leaf_circle</item>
         <item name="leafWidth">15dp</item>
         <item name="leafHeight">15dp</item>
         <item name="isShowNode">true</item>
-        <item name="nodeSrc">@drawable/node_circle</item>
-        <item name="nodeWidth">10dp</item>
-        <item name="nodeHeight">10dp</item>
         <item name="android:padding">10dp</item>
         <item name="treePaddingLeft">20dp</item>
-        <item name="marginRightItem">15dp</item>
+        <item name="marginRightItem">5dp</item>
         <item name="indentValue">10dp</item>
         <item name="isLinkIndented">false</item>
         <item name="useDefaultAnimation">false</item>

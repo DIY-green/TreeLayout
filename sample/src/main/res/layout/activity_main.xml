@@ -1,166 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/indigo"
     tools:context="com.cheng.treelayoutdemo.MainActivity">
-
-    <com.cheng.treelayout.TreeLayout
-        android:id="@+id/tl_test"
+    <Button
+        android:id="@+id/btn_directory_tree"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:leafSrc="@drawable/leaf_circle"
-        app:nodeSrc="@color/red"
-        app:indentValue="20dp"
-        style="@style/TreeLayoutDefaultStyle.Tree">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Header - 0"
-            android:textAllCaps="false"
-            app:indentLevel="0"
-            app:itemType="header"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Header - 1"
-            android:textAllCaps="false"
-            app:indentLevel="0"
-            app:itemType="header"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="1-TEST_NORMAL_ITEM"
-            app:customLeafSrc="@color/black"
-            app:customNodeSrc="@drawable/indigo_circle"
-            app:indentLevel="1"
-            app:itemType="normal"
-            app:customBranchColor="@color/black"
-            app:customBranchWidth="20dp"
-            app:customBranchHeight="10dp"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="2-=====LABEL====="
-            app:indentLevel="2"
-            app:itemType="label"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:branchTargetIndex="1"
-            app:customLeafSrc="@color/red"
-            app:customNodeSrc="@drawable/blue_circle"
-            app:customBranchColor="@color/red"
-            app:customBranchWidth="70dp"
-            app:customBranchHeight="2dp">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:gravity="center_vertical"
-                android:text="测试一下 branchTargetIndex "
-                android:background="@color/yellow"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:gravity="center_vertical"
-                android:text="这是横枝的目标Target"
-                android:background="@color/green"/>
-        </LinearLayout>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:gravity="center_vertical"
-            android:text="3-TEST_offsetTargetTop = 0"
-            android:background="@color/red"
-            app:customLeafSrc="@color/orange"
-            app:customNodeSrc="@drawable/green_circle"
-            app:customBranchColor="@color/orange"
-            app:customBranchWidth="50dp"
-            app:customBranchHeight="6dp"
-            app:offsetTargetTop="0dp"
-            app:indentLevel="3"
-            app:itemType="normal"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="4-TEST_NORMAL_ITEM"
-            app:indentLevel="4"
-            app:itemType="normal"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:gravity="center_vertical"
-            android:text="5-TEST_NORMAL_ITEM"
-            android:background="@color/green"
-            app:customLeafSrc="@color/yellow"
-            app:customNodeSrc="@drawable/purple_circle"
-            app:customBranchColor="@color/black"
-            app:customBranchWidth="10dp"
-            app:customBranchHeight="10dp"
-            app:indentLevel="0"
-            app:itemType="normal"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="6-TEST_NORMAL_ITEM"
-            app:indentLevel="0"
-            app:itemType="normal"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:gravity="center_vertical"
-            android:text="7-TEST_NORMAL_ITEM"
-            android:background="@color/blue"
-            app:customLeafSrc="@drawable/indigo_circle"
-            app:customNodeSrc="@color/black"
-            app:indentLevel="0"
-            app:itemType="normal"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="8-=====LABEL====="
-            app:indentLevel="0"
-            app:itemType="label"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:text="9-TEST_NORMAL_ITEM"
-            app:customBranchColor="@color/blue"
-            app:customBranchWidth="100dp"
-            app:customBranchHeight="7dp"
-            app:indentLevel="1"
-            app:itemType="normal"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="10-TEST_NORMAL_ITEM"
-            app:indentLevel="2"
-            app:itemType="normal"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="11-=====LABEL====="
-            app:indentLevel="2"
-            app:itemType="label"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Footer - 1"
-            android:textAllCaps="false"
-            app:indentLevel="0"
-            app:itemType="footer"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Footer - 0"
-            android:textAllCaps="false"
-            app:indentLevel="0"
-            app:itemType="footer"/>
-    </com.cheng.treelayout.TreeLayout>
-
+        android:text="@string/directory_tree"
+        android:textAllCaps="false"
+        android:onClick="onClick"/>
+    <Button
+        android:id="@+id/btn_custom_attribute"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="@string/custom_attribute"
+        android:onClick="onClick"/>
 </LinearLayout>
