@@ -26,3 +26,7 @@ TreeLayout 继承自 ViewGroup，可以直接在下面写控件，也可以通�
 
 为什么不直接继承 LinearLayout？
 直接继承 LinearLayout 无疑要更简单一点，但是为了更灵活，以及后面更多功能的添加，直接继承自 ViewGroup，这样的可操作性更强。 
+
+# LICENSE
+
+TreeLayout is available under the MIT license.

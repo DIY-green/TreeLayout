@@ -216,3 +216,7 @@ TreeLayout 继承自 ViewGroup，可以直接在下面写控件，也可以通�
     </attr>
 </declare-styleable>
 ```
+
+# 开源许可证
+  
+TreeLayout 遵循 MIT 开源许可证协议。
